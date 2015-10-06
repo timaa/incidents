@@ -1,0 +1,25 @@
+    <?= GridView::widget([
+        'dataProvider' => $dataProvider,
+        'columns' => [
+            //['class' => 'yii\grid\SerialColumn'],
+            [
+                'label' => ' № п.п. <span class="asc"></span><span class="desc"></span>',
+                'attribute' => 'id',
+                'format' => ['decimal', 2],
+            ],
+            'date',
+            'contact.fio',
+            'links',
+            'channel',
+            'viewed',
+
+            ['class' => 'yii\grid\ActionColumn'],
+        ],
+        'rowOptions' => function($model, $index, $widget, $grid){
+            if ($index%2 ==0)
+                 return ['class' => 'odd'];
+
+        },
+        'tableOptions'=>["cellspacing"=>0],
+       // 'headerOptions'
+    ]); ?>
