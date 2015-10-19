@@ -27,8 +27,19 @@ $this->params['breadcrumbs'][] = $this->title;
 
             'id',
             'name',
+            [
+                'class' => \yii\grid\ActionColumn::className(),
+                'buttons'=>[
+                    'new'=>function ($url, $model) {
+                        $customurl=Yii::$app->getUrlManager()->createUrl(['/assigned-to-catalog/add-member',"groupId" => $model->id]); //glyphicon-user
+                        return \yii\helpers\Html::a( '<span class="glyphicon  glyphicon-plus "></span>', $customurl,
+                            ['title' => Yii::t('yii', 'Добавить пользователей группы'), 'data-pjax' => '0']);
+                    },
 
-            ['class' => 'yii\grid\ActionColumn'],
+                ],
+                'template'=>'{new} {view}  {delete} {update}',
+            ],
+
         ],
     ]); ?>
 

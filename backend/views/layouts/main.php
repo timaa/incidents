@@ -51,6 +51,7 @@ AppAsset::register($this);
             ['label' => 'Тип', 'url' => ['/type-catalog/index']],
             ['label' => 'Тип инцидента', 'url' => ['/type-incident-catalog/index']],
             ['label' => 'Команды', 'url' => ['/assigned-to-catalog/index']],
+            ['label' => 'Пользователи', 'url' => ['/users/index']],
             ],
         ],
 

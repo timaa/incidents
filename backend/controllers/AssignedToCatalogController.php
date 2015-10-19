@@ -2,9 +2,13 @@
 
 namespace backend\controllers;
 
+use backend\models\Users;
+use common\models\User;
+use Intervention\Image\Exception\NotFoundException;
 use Yii;
 use backend\models\AssignedToCatalog;
 use backend\models\AssignedToCatalogSearch;
+use yii\base\Exception;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -118,4 +122,67 @@ class AssignedToCatalogController extends Controller
             throw new NotFoundHttpException('The requested page does not exist.');
         }
     }
+
+    public function actionAddMember($groupId)
+    {
+
+        $user = new Users();
+        if (\Yii::$app->request->isPost&& \Yii::$app->request->post('Users')) {
+
+            $user=Users::findOne(['id'=>$_POST['user_id']]);
+            $user->assigned_to_id =$groupId;
+            if (empty($user)) {
+                throw new NotFoundException(" User with id ".$_POST['user_id']." not found in database ");
+            }
+            if ($user->load(\Yii::$app->request->post()) && $user->save())
+            {
+                $members = Users::findAll(['assigned_to_id' => $groupId]);
+                return $this->render('addMember', [
+                    'members' =>$members,
+                    'model' => $user,
+                    'groupId' =>$groupId
+                ]);
+            } else{
+                throw new Exception("something went wrong");
+            }
+
+        }
+
+        $members = Users::findAll(['assigned_to_id' => $groupId]);
+        return $this->render('addMember', [
+            'members' =>$members,
+            'model' => $user,
+            'groupId' =>$groupId
+        ]);
+    }
+
+    public function actionSearchMember() // Функция для поиска сотрудников
+    {
+        if(\Yii::$app->request->isGet){
+            $term = $_GET['term'];
+            $limit = $_GET['maxRows'];
+            \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+            $contacts =Users::find()->limit($limit)->andFilterWhere(['like','fio',$term])->orFilterWhere(['like', 'email', $term])->all();
+            return     $contacts;
+        }
+        //test comment
+        return false;
+    }
+
+    public function actionDeleteFromGroup($memberId ,$groupId){
+        $user = Users::findOne(["id" => $memberId]);
+        if ($user) {
+            $user->assigned_to_id = null;
+            if ($user->save()) {
+                return $this->redirect(["add-member", "groupId" =>$groupId]);
+
+            } else {
+                throw new Exception("Can't save model");
+            }
+        }
+        throw new NotFoundException (" User with id $memberId not found in database ");
+
+    }
+
+
 }

@@ -34,6 +34,8 @@ $this->params['breadcrumbs'][] = $this->title;
             'role',
             'mobile_number',
             'email:email',
+            'send_sms',
+            'send_email',
         ],
     ]) ?>
 

@@ -96,6 +96,8 @@ class IncidentsController extends Controller
                         $model->save();
                     }
                 };
+            } else {
+                $model->save();
             }
             return $this->redirect(['view', 'id' => $model->id]);
         } else {
@@ -116,12 +118,18 @@ class IncidentsController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
+        $mapsForDropdown = $this->getMaps();
+        $files = new Files();
+
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
+
             return $this->redirect(['view', 'id' => $model->id]);
         } else {
-            return $this->render('update', [
+            return $this->render('create', [
                 'model' => $model,
+                'files' => $files,
+                'mapsForDropdown' => $mapsForDropdown,
             ]);
         }
     }

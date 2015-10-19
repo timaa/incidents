@@ -2,6 +2,7 @@
 
 namespace frontend\models;
 
+use backend\models\Users;
 use Yii;
 
 /**
@@ -29,6 +30,13 @@ use Yii;
  */
 class Incidents extends \yii\db\ActiveRecord
 {
+    private $oldAttrSaveArray=[];
+    public static $executionTime =[
+        1 => 24*60*60,// Стандартный
+        2 => 12*60*60,// Высокий,
+        3 => 2*60*60, // Наивысший
+        4 => 120*60*60, // Низкий
+    ];
     /**
      * @inheritdoc
      */
@@ -84,12 +92,26 @@ class Incidents extends \yii\db\ActiveRecord
 
     public function beforeValidate()
     {
-        $this->created_date = date("Y-m-d h:i:s");
-        $this->creator_id = \Yii::$app->user->id;
-        $this->parent_id =10020;
-        //AdUser::findIdentity();
+        if ($this->isNewRecord) {
+            $this->created_date = date("Y-m-d h:i:s");
+            $this->creator_id = \Yii::$app->user->id;
+            $this->parent_id =10020;
+        }
         return parent::beforeValidate();
     }
+
+    public function afterFind()
+    {
+        $this->oldAttrSaveArray = $this->attributes; // Сохраняем значения для сравнения с измененным
+        return parent::afterFind();
+    }
+
+    public function afterSave($insert, $changedAttributes) // После сохранения в базе сохарняем изменения
+    {
+        $this->getDiffAttribute($this->oldAttrSaveArray, $this->attributes, $this->id);
+        return parent::afterSave($insert, $changedAttributes);
+    }
+
 
     public function getAssignedToCatalog()
     {
@@ -131,5 +153,20 @@ class Incidents extends \yii\db\ActiveRecord
         return $this->hasOne(TypeIncidentCatalog::className(),['id'=>'incident_type_id']);
     }
 
-
+    private function getDiffAttribute(array $from, array $to, $incident_id)
+    {
+        $fio = Users::findOne(['id' => \Yii::$app->user->id])->fio;
+        foreach ($from as $key => $value ) {
+            if ( $from[$key] != $to[$key] ) {
+                $history = new History();
+                $history->from = "$from[$key]";
+                $history->to = $to[$key];
+                $history->attr_name = $key;
+                $history->username = $fio;
+                $history->incident_id = $incident_id;
+                $history->date = date("Y-m-d h:i:s");
+                $history->save();
+            }
+        }
+    }
 }
