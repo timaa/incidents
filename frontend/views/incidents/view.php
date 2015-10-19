@@ -15,6 +15,66 @@ $this->params['breadcrumbs'][] = $this->title;
 print_r($user);
 die();*/
 ?>
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- Button trigger modal -->
+<button class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal">
+    Посмотреть историю
+</button>
+
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">Название модали</h4>
+            </div>
+            <div class="modal-body">
+             <?php foreach($history as $change):?>
+                 <div>
+                     <h3><?= $change->username?></h3>
+                     <h6>Дата:<?= $change->date?></h6>
+                     <span>Изменил поле:<b><?= $model->attributeLabels()[$change->attr_name]?></b></span>
+                     <div>C:<?= $catalogs["$change->attr_name"] ? $catalogs["$change->attr_name"][$change->from] : $change->from;?></div>
+                     <div>На:<?= $catalogs["$change->attr_name"] ? $catalogs["$change->attr_name"][$change->to] : $change->to;?></div>
+                 </div>
+                 <hr>
+                <?php endforeach;?>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>
+                <button type="button" class="btn btn-primary">Сохранить изменения</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 <div class="incidents-view">
 
    <!-- <h1><?/*= Html::encode($this->title) */?></h1>-->

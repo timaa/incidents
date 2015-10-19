@@ -5,7 +5,9 @@ namespace frontend\controllers;
 use frontend\models\AssignedToCatalog;
 use frontend\models\ClassificationCatalog;
 use frontend\models\Comment;
+use frontend\models\Directory;
 use frontend\models\Files;
+use frontend\models\History;
 use frontend\models\IncidentsSearch;
 use frontend\models\PlatformCatalog;
 use frontend\models\PriorityCatalog;
@@ -47,7 +49,6 @@ class IncidentsController extends Controller
     {
         $searchModel = new IncidentsSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
@@ -64,11 +65,15 @@ class IncidentsController extends Controller
         $comment = new Comment();
         $file = new Files();
         $comments = Comment::find()->where(['incident_id' =>$id])->all();
+        $catalogs = Directory::getCatalog();
+        $history = History::findAll(['incident_id' => $id]);
         return $this->render('view', [
-            'model'   => $this->findModel($id),
-            'comment' => $comment,
-            'file'    => $file,
-            'comments'=> $comments,
+            'model'    => $this->findModel($id),
+            'comment'  => $comment,
+            'file'     => $file,
+            'comments' => $comments,
+            'catalogs' => $catalogs,
+            'history'  => $history,
         ]);
     }
 
@@ -80,9 +85,9 @@ class IncidentsController extends Controller
     public function actionCreate()
     {
         $model = new Incidents();
+        $model->setScenario('create');
         $mapsForDropdown = $this->getMaps();
         $files = new Files();
-
 
         if ($model->load(Yii::$app->request->post()) && $files->load(Yii::$app->request->post()) && $model->validate()) {
             $files->file = UploadedFile::getInstance($files,'file');
@@ -211,4 +216,12 @@ class IncidentsController extends Controller
             throw new NotFoundHttpException('The requested page does not exist.');
         }
     }
+
+/*    public function actionTest()
+    {
+        $catalog = Directory::getCatalog();
+        echo "<pre>";
+        print_r($catalog);
+        die();
+    }*/
 }

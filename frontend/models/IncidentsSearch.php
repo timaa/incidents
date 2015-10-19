@@ -5,7 +5,7 @@ namespace frontend\models;
 use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use backend\models\Incidents;
+use frontend\models\Incidents;
 
 /**
  * IncidentsSearch represents the model behind the search form about `backend\models\Incidents`.
@@ -41,7 +41,7 @@ class IncidentsSearch extends Incidents
      */
     public function search($params)
     {
-        $query = Incidents::find();
+        $query = Incidents::find()->with(['statusCatalog']);
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,

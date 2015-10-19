@@ -36,7 +36,6 @@ $(document).ready(function(){
 
     function fillForm(data)
     {
-       // console.log(JSON.stringify(data));
         $("#users-id").val(data.id);
         $("#users-fio").val(data.fio);
         $("#users-mobile_number").val(data.mobile_number);

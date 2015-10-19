@@ -92,7 +92,8 @@ class Incidents extends \yii\db\ActiveRecord
 
     public function beforeValidate()
     {
-        if ($this->isNewRecord) {
+
+        if ($this->isNewRecord && $this->scenario == "create") {
             $this->created_date = date("Y-m-d h:i:s");
             $this->creator_id = \Yii::$app->user->id;
             $this->parent_id =10020;
